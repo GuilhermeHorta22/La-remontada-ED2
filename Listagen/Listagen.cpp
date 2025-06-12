@@ -249,6 +249,44 @@ ListaGen *buscaInt(ListaGen *l, char *info)
 	return NULL; //não achou
 }
 
+//função para deletar um atomo desejado da lista generalizada
+void excluirAtomo(ListaGen *l, char *info)
+{
+	Pilha *p;
+	init(&p);
+	push(&p, l);
+
+	int flag = 0;
+	ListaGen *atual = NULL;
+
+	while(!isEmpty(p) && flag == 0)
+	{
+		atual = pop(&p);
+
+		// Verifica cabeça
+		if(!nula(head(atual)) && atomo(head(atual)))
+		{
+			if(strcmp(head(atual)->lista.info, info) == 0)
+			{
+				free(head(atual));
+				atual->lista.no.cabeca = NULL;
+				flag = 1;
+			}
+		}
+
+		// Continua a busca
+		if(!nula(tail(atual)))
+			push(&p,tail(atual));
+		if(!nula(head(atual)))
+			push(&p,head(atual));
+	}
+	if(flag == 1)
+		printf("\nAtomo excluido com sucesso!");
+	else
+		printf("\nAtomo nao foi encontrado!");
+}
+
+
 /*
 	1- Percorre a lista generalizada de forma iterativa com o auxílio de uma pilha, explorando cada sublista.
 
@@ -323,22 +361,26 @@ ListaGen *dup(ListaGen *l)
 		return NULL;
 	if(atomo(l))
 		return criaT(l->lista.info);
-	return cons(dup(head(l),dup(tail(l)));
+	return cons(dup(head(l)),dup(tail(l)));
 }
 
 int main()
 {
-	int achou;
+	int achou; //[a,[b,[c]]]
 	ListaGen *l = cons(criaT("a"),cons(cons(criaT("b"),cons(cons(criaT("c"),NULL),NULL)),NULL));
 	exibe(l);
 	
 	printf("\n### BUSCA TESTE RETORNANDO INT ###\n");
-	achou = buscaTeste(l,"d");
+	achou = buscaTeste(l,"c");
 	if(achou == 1) //achou
 		printf("\nAchou o elemento!!!\n");
 	else
 		printf("\nNao achou o elemento!!!\n");
 	
+	getch();
+	
+	printf("\n### EXCLUSAO DO ATOMO DESEJADO ###\n");
+	excluirAtomo(l,"c");
 	getch();
 	
 	printf("\n### BUSCA INTERATIVA RETORNANDO LISTAGEN ###\n");
