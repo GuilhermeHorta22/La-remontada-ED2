@@ -72,7 +72,28 @@ Tree *criaNo(int info)
 
 void insereTree(Tree **raiz, int info)
 {
+	Tree *aux, *ant;
 	
+	if(*raiz == NULL)
+		*raiz = criaNo(info);
+	else
+	{
+		aux = *raiz;
+		
+		while(aux != NULL)
+		{
+			ant = aux;
+			if(info > aux->info)
+				aux = aux->dir;
+			else
+				aux = aux->esq;
+		}
+		
+		if(info > aux->info)
+			ant->dir = criaNo(info);
+		else
+			ant->esq = criaNo(info);
+	}
 }
 
 //travessia em pre ordem RECURSIVO
