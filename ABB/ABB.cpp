@@ -70,9 +70,29 @@ Tree *criaNo(int info)
 	return novo;
 }
 
-void insereTree(Tree **raiz, int info)
+void insereABB(Tree **raiz, int info)
 {
+	Tree *aux, *ant;
 	
+	if(*raiz == NULL)
+		*raiz = criaNo(info);
+	else
+	{
+		aux = *raiz;
+		while(aux != NULL) //proccurando a posição certa para inserir
+		{
+			ant = aux;
+			if(info > aux->info)
+				aux = aux->dir;
+			if(info < aux->info)
+				aux = aux->esq;
+		}
+		
+		if(info > ant->info)
+			ant->dir = criaNo(info);
+		if(info < ant->info)
+			ant->esq = criaNo(info);
+	}
 }
 
 //travessia em pre ordem RECURSIVO
@@ -196,6 +216,105 @@ Tree *buscaABB(Tree *raiz, int info)
 	return NULL;
 }
 
+//função para deletar um nodo informado na ABB INTERATIVO
+int removerABB(Tree **raiz, int info)
+{
+    Tree *atual = *raiz;
+    Tree *pai = NULL;
+
+    //Localizar o nodo a ser removido
+    while(atual != NULL && atual->info != info)
+    {
+        pai = atual;
+        if(info < atual->info)
+            atual = atual->esq;
+        else
+            atual = atual->dir;
+    }
+
+    //Caso não encontre
+    if(atual == NULL)
+    {
+        printf("Nodo nao encontrado!\n");
+        return -1;
+    }
+
+    //Continua apenas se encontrou
+    if(atual != NULL)
+    {
+        //Caso 1: nodo folha
+        if(atual->esq == NULL && atual->dir == NULL)
+        {
+            if(pai == NULL) // é raiz
+                *raiz = NULL;
+            else
+            {
+                if(pai->esq == atual)
+                    pai->esq = NULL;
+                else
+                    pai->dir = NULL;
+            }
+            free(atual);
+        }
+
+        //Caso 2: nodo com 1 filho
+        if((atual->esq == NULL && atual->dir != NULL) || (atual->esq != NULL && atual->dir == NULL))
+        {
+            Tree *filho;
+            if(atual->esq != NULL)
+                filho = atual->esq;
+            else
+                filho = atual->dir;
+
+            if(pai == NULL) // é raiz
+                *raiz = filho;
+            else
+            {
+                if(pai->esq == atual)
+                    pai->esq = filho;
+                else
+                    pai->dir = filho;
+            }
+            free(atual);
+        }
+
+        //Caso 3: nodo com 2 filhos
+        if(atual->esq != NULL && atual->dir != NULL)
+        {
+            //Busca do sucessor (menor da subárvore direita)
+            Tree *paiSucessor = atual;
+            Tree *sucessor = atual->dir;
+
+            while(sucessor->esq != NULL)
+            {
+                paiSucessor = sucessor;
+                sucessor = sucessor->esq;
+            }
+
+            //Troca os dados
+            atual->info = sucessor->info;
+
+            //Ajusta os ponteiros para remover o sucessor
+            if(paiSucessor->esq == sucessor)
+            {
+                if(sucessor->dir != NULL)
+                    paiSucessor->esq = sucessor->dir;
+                else
+                    paiSucessor->esq = NULL;
+            }
+            else
+            {
+                if(sucessor->dir != NULL)
+                    paiSucessor->dir = sucessor->dir;
+                else
+                    paiSucessor->dir = NULL;
+            }
+            free(sucessor);
+            return 1;
+        }
+    }
+}
+
 //função que da free me todos os nodos de uma arvore RECURSIVO
 void deletarABB(Tree **raiz)
 {
@@ -278,8 +397,45 @@ int profundidade(Tree *raiz, int info)
 	return -1;
 }
 
+//função que conta a quantidade de no que tem em uma arvore
+void quantNo(Tree *raiz, int *cont)
+{
+	Pilha *p;
+	init(&p);
+	push(&p,raiz);
+	Tree *atual = NULL;
+	
+	while(!isEmpty(p))
+	{
+		atual = pop(&p);
+		(*cont)++;
+		
+		if(atual->esq != NULL)
+			push(&p,atual->esq);
+		if(atual->dir != NULL)
+			push(&p,atual->dir);
+	}
+}
+
+//função que descobre quem é o pai de um nodo e retorna por referencia
+void buscaNo(Tree *raiz, int info, Tree **e, Tree **pai)
+{
+	*e = raiz;
+	while(*e != NULL && (*e)->info != info)
+	{
+		*pai = *e;
+		if(info < (*e)->info)
+			*e = (*e)->esq;
+		else
+			*e = (*e)->dir;
+		
+	}
+}
+
 int main()
 {
 	Tree *raiz;
 	initTree(&raiz);
+	
+	
 }
