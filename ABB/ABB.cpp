@@ -79,7 +79,8 @@ void insereABB(Tree **raiz, int info)
 	else
 	{
 		aux = *raiz;
-		while(aux != NULL) //proccurando a posição certa para inserir
+		
+		while(aux != NULL)
 		{
 			ant = aux;
 			if(info > aux->info)
@@ -91,8 +92,13 @@ void insereABB(Tree **raiz, int info)
 		if(info > ant->info)
 			ant->dir = criaNo(info);
 		if(info < ant->info)
-			ant->esq = criaNo(info);
+		else
+			aux = aux->esq;
 	}
+	if(info > aux->info)
+		ant->dir = criaNo(info);
+	else
+		ant->esq = criaNo(info);
 }
 
 //travessia em pre ordem RECURSIVO
