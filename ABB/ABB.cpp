@@ -438,6 +438,131 @@ void buscaNo(Tree *raiz, int info, Tree **e, Tree **pai)
 	}
 }
 
+//função que exclui um nodo para inserir novamente no balanceiamento
+void exclusaoLado(Tree **raiz, Tree *e, Tree *pai, char lado)
+{
+	Tree *sub = NULL;
+	Tree *subPai = NULL;
+	int aux;
+	
+	if(e->esq == NULL && e->dir == NULL) // não tem filhos
+	{
+		if(e != pai) //caso se não for a raiz da arvore
+		{
+			if(e->info > pai->info)
+				pai->dir = NULL;
+			else
+				pai->esq = NULL;
+		}
+		else //é a raiz da arvore
+			*raiz = NULL;
+		free(e);
+	}
+	else
+	if(e->esq != NULL || e->dir != NULL) //apenas um filho
+	{
+		if(e != pai)
+		{
+			if(e->info > pai->info)
+			{
+				if(e->esq != NULL)
+					pai->dir = e->esq;
+				else
+					pai->dir = e->dir;
+			}
+			else
+			{
+				if(e->esq != NULL)
+					pai->esq = e->esq;
+				else
+					pai->esq = e->dir;
+			}
+		}
+		else
+		{
+			if(e->esq != NULL)
+				*raiz = e->esq;
+			else
+				*raiz = e->dir;
+		}
+		free(e);
+	}
+	else
+	{
+		if(lado == 'e')
+		{
+			sub = e->esq;
+			subPai = e;
+			while(sub->dir != NULL)
+			{
+				subPai = sub;
+				sub = sub->dir;
+			}
+			aux = sub->info;
+			exclusaoLado(&*raiz, sub, subPai, lado);
+			e->info = aux;
+		}
+		else
+		if(lado == 'd')
+		{
+			sub = e->dir;
+			subPai = e;
+			while(sub->esq != NULL)
+			{
+				subPai = sub;
+				sub = sub->esq;
+			}
+			aux = sub->info;
+			exclusaoLado(&*raiz, sub, subPai, lado);
+			e->info = aux;
+		}
+		else
+			printf("\nNao tem esse lado!!!\n");
+	}
+}
+
+//função que faz balanceamento na arvore ABB -> balanceia de acordo com a quantidade de nodo de um lado
+void balanceiamentoABB(Tree **raiz)
+{
+	Tree *p, *e, *pai;
+	int aux, fb, qEsq, qDir;
+	Fila *f;
+	initFila(&f);
+	enqueue(&f,*raiz);
+	
+	while(!isEmpty(f))
+	{
+		dequeue(&f,&p);
+		do
+		{
+			qEsq = qDir = 0;
+			quantNo(p->esq,&qEsq);
+			quantNo(p->dir,&qDir);
+			
+			fb = qDir = qEsq;
+			if(fb < -1 || fb > 1)
+			{
+				aux = p->info;
+				buscaNo(*raiz,p->info,&e,&pai);
+				if(p->esq == NULL)
+					p = p->dir;
+				else
+					p = p->esq;
+				
+				if(fb == 0)
+					exclusaoLado(&*raiz,e,pai,'d');
+				else
+					exclusaoLado(&*raiz,e,pai,'e');
+			}
+		}while(fb < -1 || fb > 1);
+		
+		if(p->esq != NULL)
+			enqueue(&f,p->esq);
+		if(p->dir != NULL)
+			enqueue(&f,p->dir;)
+	}
+}
+
 int main()
 {
 	Tree *raiz;
