@@ -403,7 +403,7 @@ int profundidade(Tree *raiz, int info)
 	return -1;
 }
 
-//função que conta a quantidade de no que tem em uma arvore
+//função que conta a quantidade de no que tem em uma arvore (Estilo pré ordem)
 void quantNo(Tree *raiz, int *cont)
 {
 	Pilha *p;
@@ -526,7 +526,7 @@ void balanceiamentoABB(Tree **raiz)
 {
 	Tree *p, *e, *pai;
 	int aux, fb, qEsq, qDir;
-	Fila *f;
+	Fila *f; //vamos usar uma fila para andar em nivel dentro da ABB
 	initFila(&f);
 	enqueue(&f,*raiz);
 	
@@ -535,12 +535,13 @@ void balanceiamentoABB(Tree **raiz)
 		dequeue(&f,&p);
 		do
 		{
+			//vamos contar a quantidade de nó de cada lado para fazer o calculo e ver se está desbalanceada
 			qEsq = qDir = 0;
 			quantNo(p->esq,&qEsq);
 			quantNo(p->dir,&qDir);
+			fb = qDir - qEsq;
 			
-			fb = qDir = qEsq;
-			if(fb < -1 || fb > 1)
+			if(fb < -1 || fb > 1) //desbalanceado
 			{
 				aux = p->info;
 				buscaNo(*raiz,p->info,&e,&pai);
@@ -549,7 +550,7 @@ void balanceiamentoABB(Tree **raiz)
 				else
 					p = p->esq;
 				
-				if(fb == 0)
+				if(fb > 0)
 					exclusaoLado(&*raiz,e,pai,'d');
 				else
 					exclusaoLado(&*raiz,e,pai,'e');
@@ -559,7 +560,7 @@ void balanceiamentoABB(Tree **raiz)
 		if(p->esq != NULL)
 			enqueue(&f,p->esq);
 		if(p->dir != NULL)
-			enqueue(&f,p->dir;)
+			enqueue(&f,p->dir);
 	}
 }
 
