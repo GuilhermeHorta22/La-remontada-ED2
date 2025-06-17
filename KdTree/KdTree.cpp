@@ -72,13 +72,12 @@ void insereKdTreeInt(Tree **raiz, int ponto[K], int n)
 			n++; //incrementar para ter um novo discriminador
 		}
 		d = (n-1)%K; //para voltar na dimensão do ant e comparar
-		if(ponto[d] < atual->ponto[d])
-			atual->esq = criaNo(ponto);
+		if(ponto[d] < ant->ponto[d])
+			ant->esq = criaNo(ponto);
 		else
-			atual->dir = criaNo(ponto);
+			ant->dir = criaNo(ponto);
 	}
 }
-
 
 //função que ordena uma arvore KdTree
 void ordena(int ponto[TF][K], int d, int ini, int fim)
@@ -104,7 +103,7 @@ void ordena(int ponto[TF][K], int d, int ini, int fim)
 	}
 }
 
-
+//função que insere ordenado na arvore KdTree
 void insereKdTreeOrd(kdtree **raiz, int ponto[TF][K], int n, int ini, int fim)
 {
 	int d, meio;

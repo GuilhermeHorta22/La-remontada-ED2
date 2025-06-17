@@ -34,7 +34,7 @@ huffman *criaNo(char simbolo, int freq)
 //função que conta a frenquencia de um simbolo da huffman
 void contFreq(char *palavra, char simbolo, int *freq)
 {
-	int i=0, j;
+	int i=0;
 	
 	while(palavra[i] != '\0')
 	{
@@ -79,6 +79,39 @@ void inserirHuffman(ListTree **lista, char simbolo, int freq)
     inserirListOrd(lista, novoNo);
 }
 
+Huffman* geraArvoreHuffman(ListTree **lista)
+{
+    while((*lista) != NULL && (*lista)->prox != NULL)
+    {
+        // Pega os dois menores nós da lista
+        ListTree *primeiro = *lista;
+        ListTree *segundo = primeiro->prox;
+
+        // Cria novo nó interno com a soma das frequências
+        Huffman *novoNo = criaNo('\0', primeiro->arv->freq + segundo->arv->freq);
+        novoNo->esq = primeiro->arv;
+        novoNo->dir = segundo->arv;
+
+        // Remove os dois primeiros nós da lista
+        *lista = segundo->prox;
+        free(primeiro);
+        free(segundo);
+
+        // Insere o novo nó na lista, mantendo ela ordenada
+        inserirListOrd(lista, novoNo);
+    }
+
+    // Quando sobrar só um nó, ele é a raiz da árvore
+    Huffman *raiz = NULL;
+    if(*lista != NULL)
+    {
+        raiz = (*lista)->arv;
+        free(*lista);
+        *lista = NULL;
+    }
+    return raiz;
+}
+
 //função que busca um simbolo e retorna seu codigo
 void buscaCodigo(Huffman *raiz, char simbolo, char *codigo, int profundidade, int *encontrado)
 {
@@ -103,6 +136,4 @@ void buscaCodigo(Huffman *raiz, char simbolo, char *codigo, int profundidade, in
         }
     }
 }
-
-
 
